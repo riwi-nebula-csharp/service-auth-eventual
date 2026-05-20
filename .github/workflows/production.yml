@@ -76,5 +76,5 @@ jobs:
               -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               ghcr.io/${{ github.repository }}:latest
             
-            # Clean up old images
+            # Clean up old images if exist
             docker image prune -a -f --filter "until=72h"
