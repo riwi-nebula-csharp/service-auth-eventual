@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Helpers\JwtHelper;
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Exception;
+
+class HasAccessPermission
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        try {
+            $token = $request->bearerToken();
+
+            if (!$token) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Token requerido.'
+                ], 401);
+            }
+
+            $payload = JwtHelper::decode($token);
+
+            if ($payload->role !== 'employee') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Acceso denegado.'
+                ], 403);
+            }
+
+            if ($payload->status !== 'active') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cuenta inactiva.'
+                ], 403);
+            }
+
+            if (!in_array('access', (array) $payload->permissions)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permiso para acceder al control de entrada.'
+                ], 403);
+            }
+
+            $request->merge(['auth_user' => $payload]);
+
+            return $next($request);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token inválido o expirado.'
+            ], 401);
+        }
+    }
+}

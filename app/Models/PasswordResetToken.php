@@ -9,6 +9,8 @@ class PasswordResetToken extends Model
     protected $connection = 'mysql';
     protected $table = 'password_reset_tokens';
 
+    const UPDATED_AT = null;
+
     protected $fillable = [
         'user_id',
         'token_hash',
@@ -22,13 +24,11 @@ class PasswordResetToken extends Model
         'used'       => 'boolean',
     ];
 
-    // Relaciones
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Scopes
     public function scopeValid($query)
     {
         return $query->where('used', false)

@@ -41,4 +41,6 @@ return [
         'redirect'      => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'internal_secret' => env('INTERNAL_SECRET'),
+
 ];
