@@ -47,7 +47,7 @@ class EmployeeController extends Controller
     public function store(CreateEmployeeRequest $request): JsonResponse
     {
         try {
-            $adminId  = $request->auth_user->sub;
+            $adminId  = $request->attributes->get('auth_user')->sub;
             $employee = $this->employeeService->create($request->validated(), $adminId);
 
             return ApiResponse::created(
@@ -63,7 +63,7 @@ class EmployeeController extends Controller
     public function update(UpdateEmployeeRequest $request, int $id): JsonResponse
     {
         try {
-            $adminId  = $request->auth_user->sub;
+            $adminId  = $request->attributes->get('auth_user')->sub;
             $employee = $this->employeeService->update($id, $request->validated(), $adminId);
 
             return ApiResponse::success(

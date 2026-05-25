@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 
-class IsAuthenticated
+class HasTicketsPermission
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -24,6 +24,13 @@ class IsAuthenticated
 
             $payload = JwtHelper::decode($token);
 
+            if ($payload->role !== 'employee') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Acceso denegado.'
+                ], 403);
+            }
+
             if ($payload->status !== 'active') {
                 return response()->json([
                     'success' => false,
@@ -31,7 +38,14 @@ class IsAuthenticated
                 ], 403);
             }
 
-            $request->merge(['auth_user' => $payload]);
+            if (!in_array('tickets', (array) $payload->permissions)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permiso para acceder a la taquilla.'
+                ], 403);
+            }
+
+            $request->attributes->set('auth_user', $payload);
 
             return $next($request);
 

@@ -20,7 +20,7 @@ class ProfileController extends Controller
     public function show(Request $request): JsonResponse
     {
         try {
-            $userId = $request->auth_user->sub;
+            $userId = $request->attributes->get('auth_user')->sub;
             $user   = $this->profileService->getProfile($userId);
 
             return ApiResponse::success(new UserResource($user));
@@ -33,7 +33,7 @@ class ProfileController extends Controller
     public function update(UpdateProfileRequest $request): JsonResponse
     {
         try {
-            $userId = $request->auth_user->sub;
+            $userId = $request->attributes->get('auth_user')->sub;
             $user   = $this->profileService->updateProfile($userId, $request->validated());
 
             return ApiResponse::success(
@@ -49,7 +49,7 @@ class ProfileController extends Controller
     public function uploadAvatar(UploadAvatarRequest $request): JsonResponse
     {
         try {
-            $userId = $request->auth_user->sub;
+            $userId = $request->attributes->get('auth_user')->sub;
             $url    = $this->profileService->uploadAvatar($userId, $request->file('avatar'));
 
             return ApiResponse::success(

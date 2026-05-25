@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 
-class HasTicketsPermission
+class HasAccessPermission
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -38,14 +38,14 @@ class HasTicketsPermission
                 ], 403);
             }
 
-            if (!in_array('tickets', (array) $payload->permissions)) {
+            if (!in_array('access', (array) $payload->permissions)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No tienes permiso para acceder a la taquilla.'
+                    'message' => 'No tienes permiso para acceder al control de entrada.'
                 ], 403);
             }
 
-            $request->merge(['auth_user' => $payload]);
+            $request->attributes->set('auth_user', $payload);
 
             return $next($request);
 

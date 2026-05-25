@@ -38,7 +38,7 @@ class IsEmployee
                 ], 403);
             }
 
-            $request->merge(['auth_user' => $payload]);
+            $request->attributes->set('auth_user', $payload);
 
             return $next($request);
 

@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('profile')
-    ->middleware('is.admin')
+    ->middleware('is.authenticated')
     ->group(function () {
         Route::get('/',        [ProfileController::class, 'show']);
         Route::put('/',        [ProfileController::class, 'update']);

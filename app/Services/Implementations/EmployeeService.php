@@ -77,7 +77,7 @@ class EmployeeService implements EmployeeServiceInterface
 
             if (isset($data['permissions'])) {
                 // Eliminar permisos anteriores
-                PortalPermission::where('user_id', $employee->id)->delete();
+                PortalPermission::where('user_id', $employee->id)->forceDelete();
 
                 // Crear nuevos permisos
                 foreach ($data['permissions'] as $permission) {

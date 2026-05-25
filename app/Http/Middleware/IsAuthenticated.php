@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 
-class IsAdmin
+class IsAuthenticated
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -24,13 +24,6 @@ class IsAdmin
 
             $payload = JwtHelper::decode($token);
 
-            if ($payload->role !== 'admin') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Acceso denegado. Se requiere rol admin.'
-                ], 403);
-            }
-
             if ($payload->status !== 'active') {
                 return response()->json([
                     'success' => false,
@@ -38,11 +31,12 @@ class IsAdmin
                 ], 403);
             }
 
-            $request->merge(['auth_user' => $payload]);
+            $request->attributes->set('auth_user', $payload);
 
             return $next($request);
 
         } catch (Exception $e) {
+            \Log::error('JWT Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Token inválido o expirado.'

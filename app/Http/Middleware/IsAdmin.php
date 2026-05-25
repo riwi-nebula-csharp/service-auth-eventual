@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 
-class HasAccessPermission
+class IsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -24,10 +24,10 @@ class HasAccessPermission
 
             $payload = JwtHelper::decode($token);
 
-            if ($payload->role !== 'employee') {
+            if ($payload->role !== 'admin') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Acceso denegado.'
+                    'message' => 'Acceso denegado. Se requiere rol admin.'
                 ], 403);
             }
 
@@ -38,14 +38,7 @@ class HasAccessPermission
                 ], 403);
             }
 
-            if (!in_array('access', (array) $payload->permissions)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No tienes permiso para acceder al control de entrada.'
-                ], 403);
-            }
-
-            $request->merge(['auth_user' => $payload]);
+            $request->attributes->set('auth_user', $payload);
 
             return $next($request);
 
