@@ -74,6 +74,8 @@ jobs:
             # Limpiar cache de Laravel dentro del contenedor
             docker exec service-auth-eventual php artisan config:clear
             docker exec service-auth-eventual php artisan cache:clear
+            docker exec service-auth-eventual php artisan route:clear
+            docker exec service-auth-eventual php artisan route:cache
 
             # Limpiar capas viejas de Docker
             docker image prune -a -f --filter "until=72h"
