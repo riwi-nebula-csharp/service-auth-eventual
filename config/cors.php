@@ -11,6 +11,7 @@ return [
             'http://127.0.0.1:5502',  // desarrollo local
             'http://localhost:5502',
             'http://127.0.0.1:5500',   // desarrollo local
+            'http://127.0.0.1:5501',
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers'          => ['*'],
