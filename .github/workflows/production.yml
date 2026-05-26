@@ -63,7 +63,7 @@ jobs:
             # Levantar con el .env reconstruido
             docker run -d \
               --name service-auth-eventual \
-              -p 8062:8080 \
+              -p 8060:8080 \
               --restart unless-stopped \
               --env-file /tmp/.env.service-auth \
               ghcr.io/$GITHUB_REPOSITORY:latest
