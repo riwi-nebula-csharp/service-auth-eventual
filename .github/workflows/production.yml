@@ -46,13 +46,13 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          envs: GITHUB_TOKEN,GITHUB_ACTOR,GITHUB_REPOSITORY,ENV_FILE
+          envs: GHCR_TOKEN,GITHUB_ACTOR,GITHUB_REPOSITORY,ENV_FILE
           script: |
             # Reconstruir el .env en la VPS
             echo "$ENV_FILE" > /tmp/.env.service-auth
 
-            # Login al registry
-            echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+            # Login al registry con PAT
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
 
             # Eliminar imagen local para forzar descarga nueva
             docker image rm ghcr.io/$GITHUB_REPOSITORY:latest --force 2>/dev/null || true
@@ -72,16 +72,23 @@ jobs:
               --env-file /tmp/.env.service-auth \
               ghcr.io/$GITHUB_REPOSITORY:latest
 
+            # Esperar que el contenedor arranque
+            sleep 5
+
+            # Limpiar cache de Laravel dentro del contenedor
+            docker exec service-auth-eventual php artisan config:clear || true
+            docker exec service-auth-eventual php artisan cache:clear || true
+            docker exec service-auth-eventual php artisan route:clear || true
+            docker exec service-auth-eventual php artisan route:cache || true
+
             # Limpiar el .env temporal
             rm /tmp/.env.service-auth
 
-            # Limpiar cache de Laravel dentro del contenedor
-            docker exec service-auth-eventual php artisan config:clear
-            docker exec service-auth-eventual php artisan cache:clear
-            docker exec service-auth-eventual php artisan route:clear
-            docker exec service-auth-eventual php artisan route:cache
+            # Verificar que el contenedor sigue corriendo
+            docker ps | grep service-auth-eventual
 
             # Limpiar capas viejas de Docker
             docker image prune -a -f --filter "until=72h"
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
