@@ -9,7 +9,8 @@ return [
         env('FRONTEND_TICKETS_URL', 'http://localhost:3002'),
         env('FRONTEND_ACCESS_URL',  'http://localhost:3003'),
             'http://127.0.0.1:5502',  // desarrollo local
-            'http://localhost:5502',   // desarrollo local
+            'http://localhost:5502',
+            'http://127.0.0.1:5500',   // desarrollo local
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers'          => ['*'],
