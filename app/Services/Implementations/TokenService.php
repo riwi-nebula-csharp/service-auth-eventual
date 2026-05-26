@@ -13,11 +13,11 @@ class TokenService implements TokenServiceInterface
     private string $secret;
     private int $expiration;
     private string $issuer;
-
+    
     public function __construct()
     {
         $this->secret     = config('jwt.secret');
-        $this->expiration = config('jwt.expiration');
+        $this->expiration = (int) config('jwt.expiration');
         $this->issuer     = config('jwt.issuer');
     }
 
