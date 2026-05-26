@@ -54,7 +54,10 @@ jobs:
             # Login al registry
             echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
 
-            # Bajar la nueva imagen
+            # Eliminar imagen local para forzar descarga nueva
+            docker image rm ghcr.io/$GITHUB_REPOSITORY:latest --force 2>/dev/null || true
+
+            # Bajar la imagen nueva del registry
             docker pull ghcr.io/$GITHUB_REPOSITORY:latest
 
             # Detener y eliminar el contenedor anterior
