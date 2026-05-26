@@ -68,8 +68,14 @@ jobs:
               --env-file /tmp/.env.service-auth \
               ghcr.io/$GITHUB_REPOSITORY:latest
 
-            # Limpiar el .env temporal y capas viejas
+            # Limpiar el .env temporal
             rm /tmp/.env.service-auth
+
+            # Limpiar cache de Laravel dentro del contenedor
+            docker exec service-auth-eventual php artisan config:clear
+            docker exec service-auth-eventual php artisan cache:clear
+
+            # Limpiar capas viejas de Docker
             docker image prune -a -f --filter "until=72h"
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
