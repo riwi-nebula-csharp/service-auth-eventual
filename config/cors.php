@@ -8,6 +8,8 @@ return [
         env('FRONTEND_ADMIN_URL',   'http://localhost:3001'),
         env('FRONTEND_TICKETS_URL', 'http://localhost:3002'),
         env('FRONTEND_ACCESS_URL',  'http://localhost:3003'),
+            'http://127.0.0.1:5502/',  // desarrollo local
+            'http://localhost:5502/',   // desarrollo local
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers'          => ['*'],
