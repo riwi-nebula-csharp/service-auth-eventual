@@ -66,22 +66,26 @@ class AuthController extends Controller
         return ApiResponse::success(['url' => $url]);
     }
 
-    public function handleGoogleCallback(): JsonResponse
+    public function handleGoogleCallback(): \Illuminate\Http\RedirectResponse
     {
         try {
             $googleUser = Socialite::driver('google')
                 ->stateless()
                 ->user();
-
-            $result = $this->authService->loginWithGoogle($googleUser->token);
-
-            return ApiResponse::success([
-                'token' => $result['token'],
-                'user'  => new UserResource($result['user']),
-            ], 'Login con Google exitoso.');
-
+    
+            $result = $this->authService->loginWithGoogle($googleUser);
+    
+            $token = $result['token'];
+    
+            // Redirigir al frontend con el token en la URL
+            return redirect()->away(
+                env('FRONTEND_NEBULA_URL') . '/#/auth/callback?token=' . $token
+            );
+    
         } catch (Exception $e) {
-            return ApiResponse::error($e->getMessage(), 401);
+            return redirect()->away(
+                env('FRONTEND_NEBULA_URL') . '/#/login?error=google_auth_failed'
+            );
         }
     }
 
